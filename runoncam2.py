@@ -56,7 +56,7 @@ while True:
         break
 
     # Pause for a while
-    time.sleep(0.2)
+    time.sleep(1.0)
 
 # Release resources and close windows
 cv2.destroyAllWindows()
