@@ -4,6 +4,7 @@ Script to run YOLOv8 model on the Picamera2
 
 import psutil
 import cv2
+import time
 from picamera2 import Picamera2
 import math
 from ultralytics import YOLO
@@ -53,6 +54,9 @@ while True:
     # Break the loop if 'q' is pressed
     if cv2.waitKey(1) == ord("q"):
         break
+
+    # Pause for a while
+    time.sleep(0.2)
 
 # Release resources and close windows
 cv2.destroyAllWindows()
