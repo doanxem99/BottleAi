@@ -2,6 +2,7 @@
 Script to run YOLOv8 model on the Picamera2
 '''
 
+import psutil
 import cv2
 from picamera2 import Picamera2
 import math
@@ -20,6 +21,7 @@ model = YOLO("best_ncnn_model")
 
 # Define the class names
 classNames = ["Glass-Bottle", "Plastic-Bottle", "Trash"]
+
 
 CONFIDENCE_THRESHOLD = 0.8
 # Check bottle
@@ -62,4 +64,3 @@ print('Program takes CPU:', psutil.cpu_percent(), '%')
 print('RAM memory % used:', psutil.virtual_memory()[2])
 # Getting usage of virtual_memory in GB ( 4th field)
 print('RAM used (GB):', psutil.virtual_memory()[3]/1000000000)
-
