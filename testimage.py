@@ -6,7 +6,7 @@ import time
 start = time.time()
 
 # Load model
-model = YOLO('yolov3-tinyu_ncnn_model', task='detect')
+model = YOLO('yolov5nu_ncnn_model', task='detect')
 #model = YOLO('best_ncnn_model', task='detect')
 
 # Test on a single image
