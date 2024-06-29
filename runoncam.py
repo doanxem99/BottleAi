@@ -11,7 +11,7 @@ import psutil
 from ultralytics import YOLO
 
 # Load model
-model = YOLO('best_ncnn_model')
+model = YOLO('best_ncnn_model', task='detect')
 model.imgsz = (360, 360)
 
 # Set camera
