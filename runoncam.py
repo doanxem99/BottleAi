@@ -1,57 +1,58 @@
 '''
-Script to run YOLOv8 model on the Picamera2
+Run model yolo on camera
 '''
 
-import psutil
-import cv2
-import time
-from picamera2 import Picamera2
+# Import libraries
+import sys
 import math
+import time
+import cv2
+import psutil
 from ultralytics import YOLO
 
-# Initialize the Picamera2
-picam2 = Picamera2()
-picam2.preview_configuration.main.size = (380, 200)
-picam2.preview_configuration.main.format = "RGB888"
-picam2.preview_configuration.align()
-picam2.configure("preview")
-picam2.start()
+# Load model
+model = YOLO('best_ncnn_model')
+model.imgsz = (360, 360)
 
-# Load the YOLOv8 model
-model = YOLO("best_ncnn_model", )
+# Set camera
+URL = 'http://10.126.4.53:4747/video'
+cap = cv2.VideoCapture(URL)
+cap.set(3, 480)
+cap.set(4, 480)
 
-# Define the class names
+# Check camera
+if not cap.isOpened():
+    print('Error: Could not open camera.')
+    sys.exit()
+else:
+    print('Success: Opened camera.')
+
+# Object classes
 classNames = ["Glass-Bottle", "Plastic-Bottle", "Trash"]
 
-
-CONFIDENCE_THRESHOLD = 0.8
 # Check bottle
-def check_bottle(results):
+def checkBottle(results):
     for result in results:
         boxes = result.boxes
         for box in boxes:
             cls = int(box.cls[0])
             confidence = math.ceil(box.conf[0] * 100) / 100
-            if classNames[cls] == 'Plastic-Bottle' and confidence > CONFIDENCE_THRESHOLD:
+            if (classNames[cls] == 'Glass-Bottle' or classNames[cls] == 'Plastic-Bottle') and confidence > 0.8:
                 return True
     return False
-
-
-# Main loop
+# Run model on camera
 while True:
-    # Capture frame-by-frame
-    frame = picam2.capture_array()
-
-    # Run YOLOv8 inference on the frame
+    # Read frame
+    ret, frame = cap.read()
+    if not ret:
+        break
+    # Run model
     results = model(frame)
-
-    # Check if a bottle is detected
-    if check_bottle(results):
-        print("Bottle detected!")
+    # Check bottle
+    if checkBottle(results):
+        print('Bottle detected!')
     else:
-        print("No bottle detected!")
-
-    # Display the frame
+        print('No bottle detected!')
     # Font
     font = cv2.FONT_HERSHEY_SIMPLEX
     FONTSCALE = 0.5
@@ -77,22 +78,31 @@ while True:
              # Confidence
             org = [x1, y1 + 20]
             cv2.putText(frame, str(conf), org, font, FONTSCALE, COLOR, THICKNESS, cv2.LINE_AA)
-
-
-    # Break the loop if 'q' is pressed
-    if cv2.waitKey(1) == ord("q"):
+    # Show FPS on screen after processing is done
+    fps = cap.get(cv2.CAP_PROP_FPS)
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    COLOR = (0, 255, 0)
+    THICKNESS = 2
+    FONTSCALE = 1
+    cv2.putText(frame, 'FPS: ' + str(int(fps)), (10, 30), font, 1, COLOR, THICKNESS, cv2.LINE_AA)
+    # Display result
+    cv2.imshow('frame', frame)
+    # Wait for 1.0 second
+    time.sleep(1.0)
+    # Exit
+    if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
-    # Pause for a while
-    time.sleep(1.0)
-
-# Release resources and close windows
+cap.release()
 cv2.destroyAllWindows()
-picam2.stop()
-
 # CPU usage
 print('Program takes CPU:', psutil.cpu_percent(), '%')
 # Getting % usage of virtual_memory ( 3rd field)
 print('RAM memory % used:', psutil.virtual_memory()[2])
 # Getting usage of virtual_memory in GB ( 4th field)
 print('RAM used (GB):', psutil.virtual_memory()[3]/1000000000)
+# Release camera
+
+
+
+
