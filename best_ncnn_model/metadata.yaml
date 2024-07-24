@@ -1,7 +1,7 @@
-description: Ultralytics best model trained on /content/BottleAi-2/data.yaml
+description: Ultralytics best model trained on /content/BottleAi-5/data.yaml
 author: Ultralytics
-date: '2024-07-22T19:39:29.186551'
-version: 8.2.62
+date: '2024-07-24T16:51:46.327080'
+version: 8.2.64
 license: AGPL-3.0 License (https://ultralytics.com/license)
 docs: https://docs.ultralytics.com
 stride: 32
@@ -11,4 +11,4 @@ imgsz:
 - 640
 - 640
 names:
-  0: plastic-bottle
+  0: plastic
